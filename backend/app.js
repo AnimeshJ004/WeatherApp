@@ -10,20 +10,24 @@ const __dirname = path.dirname(__filename);
 dotenv.config({ path: path.join(__dirname, '..', '.env') });
 
 const app = express();
+const MONGODB_URI = process.env.MONGOURI;
+const frontendURL = "https://weatherapp-frontend-8sy0.onrender.com"
+
 app.use(cors({
   origin: ['http://localhost:5174', 'http://localhost:5173', 'http://192.168.1.9:5174', 'http://192.168.1.9:5173'],
   credentials: true
 }));
+
 app.use(express.json());
 
-const MONGODB_URI = process.env.MONGOURI;
-
+const apiURL = process.env.API_KEY;
 // Connect MongoDB
+<<<<<<< HEAD
 // mongoose.connect(MONGODB_URI, {
 //   useNewUrlParser: true,
 //   useUnifiedTopology: true
 // })
-mongoose.connect(process.env.MONGODB_URI);
+mongoose.connect(process.env.MONGODB_URI)
 .then(() => console.log("MongoDB Connected"))
 .catch(err => console.log(err));
 
@@ -53,3 +57,16 @@ app.get("/weather", async (req, res) => {
 });
 
 app.listen(5000, () => console.log("Server running on port 5000"));
+import path from "path";
+import { fileURLToPath } from "url";
+
+if (process.env.NODE_ENV === "production") {
+  app.use(express.static(path.join(__dirname, "../frontend/build")));
+
+  app.get("*", (req, res) => {
+    res.sendFile(path.resolve(__dirname, "../frontend", "build", "index.html"));
+  });
+}
+
+const port = process.env.PORT || 3000;
+app.listen(port, () => console.log(`Server running on port ${port}`));

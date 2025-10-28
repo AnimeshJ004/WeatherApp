@@ -12,6 +12,12 @@ export default defineConfig({
     },
   },
   server: {
+    proxy: {
+      '/weather': {
+        target: 'http://localhost:5000',
+        changeOrigin: true,
+      },
+    },
     open: true,
   },
 })
