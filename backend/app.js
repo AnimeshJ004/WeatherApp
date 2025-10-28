@@ -22,7 +22,6 @@ app.use(express.json());
 
 const apiURL = process.env.API_KEY;
 // Connect MongoDB
-<<<<<<< HEAD
 // mongoose.connect(MONGODB_URI, {
 //   useNewUrlParser: true,
 //   useUnifiedTopology: true
