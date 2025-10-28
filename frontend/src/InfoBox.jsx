@@ -5,7 +5,6 @@ import Typography from '@mui/material/Typography';
 import SunnyIcon from '@mui/icons-material/Sunny';
 import AcUnitIcon from '@mui/icons-material/AcUnit';
 import ThunderstormIcon from '@mui/icons-material/Thunderstorm';
-import "./InfoBox.css"
 export default function InfoBox({info}){
   const INIT_URL=
   "https://images.unsplash.com/photo-1579003593419-98f949b9398f?q=80&w=873&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
@@ -19,16 +18,14 @@ export default function InfoBox({info}){
     return(
         <div className="InfoBox">
         <div className='cardContainer'>
-        <Card  sx={{
+        <Card className="infoBoxCard" sx={{
         width: 250,
-        borderRadius: "16px",
-        background: "rgba(0,0,0,0.7)", // dark glass effect
+        borderRadius: "20px",
         color: "white",
-        overflow: "hidden", // keeps image + text inside
-        boxShadow: "4px 4px 20px rgba(0,0,0,0.5)",
-        objectFit:"cover",
+        overflow: "hidden",
       }}>
       <CardMedia
+        className="infoBoxMedia"
         sx={{ height: 90 , width: 250}}
         image={
           info.humidity>80
@@ -37,12 +34,13 @@ export default function InfoBox({info}){
           ? HOT_URL:
           COLD_URL
         }
-        title="green iguana"
+        title="Weather Image"
       />
-      <CardContent>
+      <CardContent className="infoBoxContent">
         <div>
-        <Typography gutterBottom variant="h5" component="div" color='blue' >
+        <Typography gutterBottom variant="h5" component="div" className="infoBoxTitle" sx={{ color: '#FFD700' }}>
           {info.city}&nbsp;
+          <span className="weatherIcon">
           {
           info.humidity>80
           ? <ThunderstormIcon/>
@@ -50,15 +48,15 @@ export default function InfoBox({info}){
           ? <SunnyIcon/>:
           <AcUnitIcon/>
         }
+          </span>
         </Typography>
         </div>
-        <Typography variant="body2" sx={{ color: 'white' }} component={"span"} style={{fontSize:"17px"}}>
-           Temprature: {info.temp}&deg;C
-           <br/><br/>
-           Humidity: {info.humidity}
-           <br/><br/>
+        <Typography variant="body2" sx={{ color: 'white' }} component={"span"}>
+           Temperature: {info.temp}&deg;C
+           <br/>
+           Humidity: {info.humidity}%
+           <br/>
            Weather: {info.weather}
-           <br/><br/>
         </Typography>
       </CardContent>
      </Card>

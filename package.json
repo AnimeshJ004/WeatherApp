@@ -2,7 +2,6 @@
   "name": "mini-project-react",
   "private": true,
   "version": "0.0.0",
-  "type": "module",
   "scripts": {
     "dev": "vite",
     "build": "vite build",
@@ -15,10 +14,13 @@
     "@fontsource/roboto": "^5.2.6",
     "@mui/icons-material": "^7.3.2",
     "@mui/material": "^7.3.2",
+    "cors": "^2.8.5",
+    "dotenv": "^17.2.2",
     "express": "^5.1.0",
     "mongodb": "^6.19.0",
-    "mongoose": "^8.18.0",
+    "mongoose": "^8.18.1",
     "node": "^20.19.5",
+    "nodemon": "^3.1.10",
     "react": "^19.1.1",
     "react-dom": "^19.1.1"
   },
@@ -37,5 +39,13 @@
   "main": "eslint.config.js",
   "keywords": [],
   "author": "",
-  "license": "ISC"
+  "license": "ISC",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/AnimeshJ004/WeatherApp.git"
+  },
+  "bugs": {
+    "url": "https://github.com/AnimeshJ004/WeatherApp/issues"
+  },
+  "homepage": "https://github.com/AnimeshJ004/WeatherApp#readme"
 }
