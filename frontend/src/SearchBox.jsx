@@ -7,7 +7,7 @@ export default function SearchBox({ updateInfo }) {
   let [error, setError] = useState(false);
   let getweatherinfo = async () => {
     try {
-       let response = await fetch(`http://localhost:5000/weather?city=${city}`);
+       let response = await fetch(`http://localhost:5000/weather?city=${encodeURIComponent(city)}`);
       let jsonResponse = await response.json();
       if (!response.ok) {
         throw new Error(jsonResponse.error || "Failed to fetch weather data");

@@ -5,15 +5,15 @@ import path from "path";
 import { fileURLToPath } from "url";
 import dotenv from "dotenv";
 
-dotenv.config();
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+dotenv.config({ path: path.join(__dirname, '..', '.env') });
 
 const app = express();
 app.use(cors());
 app.use(express.json());
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
-const MONGODB_URI = process.env.MONGO_URI;
+const MONGODB_URI = process.env.MONGOURI;
 
 // Connect MongoDB
 mongoose.connect(MONGODB_URI, {
@@ -32,12 +32,12 @@ const User = mongoose.model("User", UserSchema);
 // API Route
 app.get("/weather", async (req, res) => {
   const city = req.query.city || "London"; // Default to London if no city provided
-  const apiKey = process.env.MY_API_KEY;
+  const apiKey = process.env.API_KEY;
   if (!apiKey) {
     return res.status(500).json({ error: "API key not found" });
   }
   try {
-    const response = await fetch(`https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=${apiKey}&units=metric`);
+    const response = await fetch(`https://api.openweathermap.org/data/2.5/weather?q=${encodeURIComponent(city)}&appid=${apiKey}&units=metric`);
     const data = await response.json();
     if (!response.ok) {
       return res.status(response.status).json({ error: data.message || "City not found" });
