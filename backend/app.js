@@ -13,9 +13,10 @@ app.use(express.json());
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
+const MONGODB_URI = process.env.MONGO_URI;
 
 // Connect MongoDB
-mongoose.connect("mongodb://127.0.0.1:27017/weather", {
+mongoose.connect(MONGODB_URI, {
   useNewUrlParser: true,
   useUnifiedTopology: true
 })
