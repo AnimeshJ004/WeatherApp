@@ -19,10 +19,11 @@ app.use(express.json());
 const MONGODB_URI = process.env.MONGOURI;
 
 // Connect MongoDB
-mongoose.connect(MONGODB_URI, {
-  useNewUrlParser: true,
-  useUnifiedTopology: true
-})
+// mongoose.connect(MONGODB_URI, {
+//   useNewUrlParser: true,
+//   useUnifiedTopology: true
+// })
+mongoose.connect(process.env.MONGODB_URI);
 .then(() => console.log("MongoDB Connected"))
 .catch(err => console.log(err));
 
