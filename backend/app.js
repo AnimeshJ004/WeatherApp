@@ -51,13 +51,11 @@ app.get("/weather", async (req, res) => {
     }
     res.json(data);
   } catch (error) {
-    res.status(500).json({ error: "Failed to fetch weather data" });
+    res.status(500).json({ error: "Failed to fetch weather data"});
   }
 });
 
 app.listen(5000, () => console.log("Server running on port 5000"));
-import path from "path";
-import { fileURLToPath } from "url";
 
 if (process.env.NODE_ENV === "production") {
   app.use(express.static(path.join(__dirname, "../frontend/build")));
