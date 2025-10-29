@@ -12,7 +12,7 @@ const __dirname = path.dirname(__filename);
 dotenv.config({ path: path.join(__dirname, '..', '.env') });
 
 const app = express();
-const MONGODB_URI = process.env.MONGOURI;
+const MONGODB_URI = process.env.MONGO_ATLAS_URI;
 const frontendURL = "https://weatherapp-frontend-8sy0.onrender.com";
 
 // --- Middleware ---
