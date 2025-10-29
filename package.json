@@ -3,15 +3,15 @@
   "private": true,
   "version": "0.0.0",
   "type": "module",
-"scripts": {
+ "scripts": {
   "dev": "concurrently \"node backend/app.js\" \"vite\"",
-  "build": "cd frontend && npm install && npm run build",
+  "build": "cd frontend && npm install",
   "start": "node backend/app.js",
   "lint": "eslint .",
   "preview": "vite preview",
   "server": "node backend/app.js"
 },
-  "dependencies": {
+    "dependencies": {
     "@emotion/react": "^11.14.0",
     "@emotion/styled": "^11.14.1",
     "@fontsource/roboto": "^5.2.6",
