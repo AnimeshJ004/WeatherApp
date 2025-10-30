@@ -77,7 +77,7 @@ app.get("/weather", async (req, res) => {
 //
 // CHANGED 'build' back to 'dist'. Please confirm this is your build folder's name
 // (e.g., the folder created when you run 'npm run build' in /frontend)
-const frontendDistPath = path.join(__dirname, "../frontend/dist");
+const frontendDistPath = path.join(__dirname, "../dist");
 app.use(express.static(frontendDistPath));
 
 // Catch-all route to serve index.html for any request that doesn't match an API route
@@ -95,5 +95,5 @@ app.get(/.*/, (req, res) => {
 
 // --- Start Server ---
 // (This should be the *only* app.listen call and it should be at the end)
-const port = process.env.PORT || 3000;
+const port = process.env.PORT;
 app.listen(port, () => console.log(`Server running on port ${port}`));

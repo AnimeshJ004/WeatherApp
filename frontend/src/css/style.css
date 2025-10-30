@@ -283,7 +283,7 @@ body {
   }
 
   .infoBoxMedia {
-    height: 80px !important;
+    height: 100px !important;
   }
 }
 
@@ -301,6 +301,6 @@ body {
   }
 
   .infoBoxMedia {
-    height: 70px !important;
+    height: 90px !important;
   }
 }

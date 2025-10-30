@@ -3,9 +3,9 @@
   "private": true,
   "version": "0.0.0",
   "type": "module",
- "scripts": {
+"scripts": {
   "dev": "concurrently \"node backend/app.js\" \"vite\"",
-  "build": "cd frontend && npm install",
+  "build": "vite build",
   "start": "node backend/app.js",
   "lint": "eslint .",
   "preview": "vite preview",

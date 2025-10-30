@@ -4,7 +4,7 @@ import { useState } from 'react';
 
 export default function SearchBox({ updateInfo }) {
   let [city, setCity] = useState("");
-  let [error, setError] = useState(false);
+  let [error, setError] = useState("");
   let getweatherinfo = async () => {
     try {
        let response = await fetch(`/weather?city=${encodeURIComponent(city)}`);
@@ -34,11 +34,11 @@ export default function SearchBox({ updateInfo }) {
       event.preventDefault();
       console.log(city);
       setCity("");
-      setError(false);
+      setError("");
       let newinfo = await getweatherinfo();
       updateInfo(newinfo);
     } catch (err) {
-      setError(true);
+      setError(err.message);
       console.error(err);
     }
   };
@@ -73,7 +73,7 @@ export default function SearchBox({ updateInfo }) {
           >
             Search
           </Button>
-          {error && <p className="errorMessage">No Such Place exists!</p>}
+          {error && <p className="errorMessage">{error}</p>}
         </form>
       </div>
     </div>)
