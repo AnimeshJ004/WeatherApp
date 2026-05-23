@@ -1,80 +1,86 @@
-import TextField from '@mui/material/TextField';
-import Button from '@mui/material/Button';
 import { useState } from 'react';
 
 export default function SearchBox({ updateInfo }) {
-  let [city, setCity] = useState("");
-  let [error, setError] = useState("");
-  let getweatherinfo = async () => {
-    try {
-       let response = await fetch(`/weather?city=${encodeURIComponent(city)}`);
-      let jsonResponse = await response.json();
-      if (!response.ok) {
-        throw new Error(jsonResponse.error || "Failed to fetch weather data");
-      }
-      let result = {
-        city: city,
-        temp: jsonResponse.main.temp,
-        humidity: jsonResponse.main.humidity,
-        weather: jsonResponse.weather[0].description,
-      }
-      console.log(result);
-      return result;
-    } catch (err) {
-      throw err;
+  const [city, setCity] = useState('');
+  const [error, setError] = useState('');
+  const [loading, setLoading] = useState(false);
+
+  const getWeatherInfo = async () => {
+    const response = await fetch(`/weather?city=${encodeURIComponent(city)}`);
+    const jsonResponse = await response.json();
+    if (!response.ok) {
+      throw new Error(jsonResponse.error || 'City not found');
     }
-  }
+    return {
+      city: jsonResponse.name,
+      country: jsonResponse.sys?.country || '',
+      temp: Math.round(jsonResponse.main.temp),
+      feelsLike: Math.round(jsonResponse.main.feels_like),
+      humidity: jsonResponse.main.humidity,
+      pressure: jsonResponse.main.pressure,
+      windSpeed: jsonResponse.wind?.speed || 0,
+      visibility: jsonResponse.visibility ? Math.round(jsonResponse.visibility / 1000) : 'N/A',
+      weather: jsonResponse.weather[0].description,
+      condition: jsonResponse.weather[0].main,       // e.g. "Rain", "Clear", "Clouds", "Snow"
+      icon: jsonResponse.weather[0].icon,            // OpenWeatherMap icon code
+      tempMin: Math.round(jsonResponse.main.temp_min),
+      tempMax: Math.round(jsonResponse.main.temp_max),
+    };
+  };
 
-  let handleChange = (event) => {
-    setCity(event.target.value);
-  }
+  const handleChange = (e) => setCity(e.target.value);
 
-  let handleSubmit = async (event) => {
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setLoading(true);
+    setError('');
     try {
-      event.preventDefault();
-      console.log(city);
-      setCity("");
-      setError("");
-      let newinfo = await getweatherinfo();
-      updateInfo(newinfo);
+      const newInfo = await getWeatherInfo();
+      updateInfo(newInfo);
+      setCity('');
     } catch (err) {
       setError(err.message);
-      console.error(err);
+    } finally {
+      setLoading(false);
     }
   };
+
   return (
-    <div className='weather'>
-      <div className="searchContainer">
-        <form className="searchForm" onSubmit={handleSubmit}>
-          <TextField
-            className="searchInput"
-            id="outlined-basic"
-            label="Enter City Name"
-            variant="outlined"
-            required
+    <div className="search-wrapper">
+      <form className="search-form" onSubmit={handleSubmit}>
+        <div className="search-input-group">
+          <svg className="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+            <circle cx="11" cy="11" r="8" />
+            <path d="m21 21-4.35-4.35" />
+          </svg>
+          <input
+            id="city-input"
+            className="search-input"
+            type="text"
+            placeholder="Search city..."
             value={city}
             onChange={handleChange}
-            sx={{
-              "& .MuiInputLabel-root": {
-                color: "rgba(255, 255, 255, 0.7)", // label color with transparency
-              },
-              "& .MuiInputLabel-root.Mui-focused": {
-                color: "white", // golden color when focused
-              },
-              "& .MuiInputBase-input": {
-                color: "white",           // input text color
-              }
-            }}
+            required
           />
-          <Button
-            className="searchButton"
-            variant="contained"
-            type='submit'
-          >
-            Search
-          </Button>
-          {error && <p className="errorMessage">{error}</p>}
-        </form>
-      </div>
-    </div>)
+        </div>
+        <button className={`search-btn ${loading ? 'loading' : ''}`} type="submit" disabled={loading}>
+          {loading ? (
+            <span className="spinner" />
+          ) : (
+            'Search'
+          )}
+        </button>
+      </form>
+      {error && (
+        <div className="error-toast">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" width="16" height="16">
+            <circle cx="12" cy="12" r="10" />
+            <line x1="12" y1="8" x2="12" y2="12" />
+            <line x1="12" y1="16" x2="12.01" y2="16" />
+          </svg>
+          {error}
+        </div>
+      )}
+    </div>
+  );
 }
