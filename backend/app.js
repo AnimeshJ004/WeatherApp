@@ -8,92 +8,87 @@ import dotenv from "dotenv";
 // --- Setup __dirname and dotenv ---
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
-// Load .env file from the root directory (one level up)
 dotenv.config({ path: path.join(__dirname, '..', '.env') });
 
 const app = express();
 const MONGODB_URI = process.env.MONGO_ATLAS_URI;
-const frontendURL = "https://weatherapp-frontend-8sy0.onrender.com";
 
-// --- Middleware ---
+// --- CORS ---
+// Allow any Render subdomain + localhost for dev
+const allowedOrigins = [
+  'http://localhost:5173',
+  'http://localhost:5174',
+  'http://192.168.1.9:5173',
+  'http://192.168.1.9:5174',
+  // Add your exact frontend Render URL here:
+  'https://weatherapp-frontend-8sy0.onrender.com',
+];
 
-// 1. CORS Configuration
-//    (Added your frontendURL to the origin array)
 app.use(cors({
-  origin: [
-    'http://localhost:5174', 
-    'http://localhost:5173', 
-    'http://192.168.1.9:5174', 
-    'http://192.168.1.9:5173',
-    frontendURL // <-- IMPORTANT FIX
-  ],
-  credentials: true
+  origin: (origin, callback) => {
+    // Allow requests with no origin (curl, mobile apps, same-origin)
+    if (!origin) return callback(null, true);
+    if (allowedOrigins.includes(origin)) return callback(null, true);
+    callback(new Error(`CORS blocked: ${origin}`));
+  },
+  credentials: true,
 }));
 
-// 2. Body Parser
+// --- Body Parser ---
 app.use(express.json());
 
-// --- MongoDB Connection ---
-// Check if MONGODB_URI is loaded
+// --- MongoDB ---
 if (!MONGODB_URI) {
-  console.error("MongoDB Connection Error: MONGODB_URI is not defined.");
-  console.error("Please set MONGODB_URI in your Render Environment Variables.");
+  console.error("MONGO_ATLAS_URI is not defined — skipping DB connection.");
 } else {
   mongoose.connect(MONGODB_URI)
     .then(() => console.log("MongoDB Connected"))
     .catch(err => console.log("MongoDB Connection Error:", err.message));
 }
 
-// --- API Routes ---
-// (Example schema, feel free to remove if unused)
-const UserSchema = new mongoose.Schema({ name: String, age: Number });
-const User = mongoose.model("User", UserSchema);
+// --- Weather API Route ---
+// Always returns JSON — never HTML
+app.get("/api/weather", async (req, res) => {
+  res.setHeader('Content-Type', 'application/json');
 
-app.get("/weather", async (req, res) => {
-  const city = req.query.city || "London"; 
+  const city = req.query.city || "London";
   const apiKey = process.env.API_KEY;
 
   if (!apiKey) {
-    return res.status(500).json({ error: "API key not found. Server configuration error." });
+    return res.status(500).json({ error: "API key not configured on server." });
   }
 
   try {
-    const response = await fetch(`https://api.openweathermap.org/data/2.5/weather?q=${encodeURIComponent(city)}&appid=${apiKey}&units=metric`);
-    const data = await response.json();
+    const apiRes = await fetch(
+      `https://api.openweathermap.org/data/2.5/weather?q=${encodeURIComponent(city)}&appid=${apiKey}&units=metric`
+    );
+    const data = await apiRes.json();
 
-    if (!response.ok) {
-      return res.status(response.status).json({ error: data.message || "City not found" });
+    if (!apiRes.ok) {
+      return res.status(apiRes.status).json({ error: data.message || "City not found" });
     }
     res.json(data);
   } catch (error) {
     console.error("Weather fetch error:", error);
-    res.status(500).json({ error: "Failed to fetch weather data"});
+    res.status(500).json({ error: "Failed to fetch weather data from OpenWeatherMap." });
   }
 });
 
-// --- Serve Frontend ---
-// This section serves your React/Vite app's static files (CSS, JS, images)
-// and handles client-side routing.
-//
-// CHANGED 'build' back to 'dist'. Please confirm this is your build folder's name
-// (e.g., the folder created when you run 'npm run build' in /frontend)
+// --- Serve Frontend (dist) ---
 const frontendDistPath = path.join(__dirname, "../dist");
 app.use(express.static(frontendDistPath));
 
-// Catch-all route to serve index.html for any request that doesn't match an API route
-console.log("Setting up catch-all route..."); // <-- Added this log
-// Using Regex /.*/ as a catch-all to bypass the PathError
-app.get(/.*/, (req, res) => { 
+// Catch-all: serve index.html for client-side routing
+app.get(/(.*)/, (req, res) => {
   const indexPath = path.resolve(frontendDistPath, "index.html");
   res.sendFile(indexPath, (err) => {
     if (err) {
       console.error("Error sending index.html:", err.message);
-      res.status(404).send("Frontend not found. (index.html is missing from build folder)");
+      res.status(500).json({ error: "Frontend build not found. Run npm run build." });
     }
   });
 });
 
 // --- Start Server ---
-// (This should be the *only* app.listen call and it should be at the end)
-const port = process.env.PORT;
-app.listen(port, () => console.log(`Server running on port ${port}`));
+const port = process.env.PORT || 5000;
+app.listen(port, () => console.log(`✅ Server running on port ${port}`));

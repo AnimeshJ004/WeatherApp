@@ -8,12 +8,13 @@ export default defineConfig({
   root: 'frontend',
   server: {
     proxy: {
-      '/weather': 'http://localhost:5000'
+      // In local dev: /api/weather → Express backend at localhost:5000
+      '/api': 'http://localhost:5000'
     }
   },
   build: {
-    // Tell Vite where to output the build folder
-    // '../dist' means "go one folder up from 'root', and create 'dist'"
-    outDir: '../dist'
+    // Output to root-level dist/ (Vercel reads from here via vercel.json outputDirectory)
+    outDir: '../dist',
+    emptyOutDir: true,
   }
 })
